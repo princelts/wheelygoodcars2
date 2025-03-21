@@ -31,7 +31,9 @@
                                     <img src="{{ asset('storage/' . $image) }}" class="w-20 h-20 object-cover rounded">
                                 @endforeach
                             </div>
-                
+                            @else
+                                <img src="https://via.placeholder.com/150" class="w-20 h-20 object-cover rounded">
+                            @endif
                         </td>
                         <td class="py-4 px-6">
                             <h5 class="font-bold text-lg">{{ $car->license_plate }}</h5>

@@ -11,7 +11,7 @@ class Car extends Model
 
     protected $fillable = [
         'license_plate',
-        'make',
+        'brand',
         'model',
         'price',
         'mileage',
@@ -20,11 +20,10 @@ class Car extends Model
         'production_year',
         'weight',
         'color',
-        'image',
+        'images',
         'sold_at',
         'views',
         'user_id', // <-- Voeg deze toe!
-
     ];
 
     protected $casts = [

@@ -10,15 +10,17 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($cars as $car)
             <div class="bg-white p-4 rounded-lg shadow-md">
-                {{-- <div class="text-center">
-                    @if($car->image)
-                        <img src="{{ asset('storage/' . $car->image) }}" alt="{{ $car->brand }} {{ $car->model }}" class="w-full h-48 object-cover rounded-lg">
+                <div class="text-center">
+                    @if ($car->images)
+                    <div class="flex space-x-2 mt-2">
+                        @foreach (json_decode($car->images) as $image)
+                            <img src="{{ asset('storage/' . $image) }}" class="w-20 h-20 object-cover rounded">
+                        @endforeach
+                    </div>
                     @else
-                        <div class="w-full h-48 bg-gray-200 flex items-center justify-center rounded-lg">
-                            <span class="text-gray-500">Geen afbeelding</span>
-                        </div>
+                        <img src="https://placehold.co/600x400/EEE/31343C" class="w-20 h-20 object-cover rounded">
                     @endif
-                </div> --}}
+                </div>
                 <h4 class="text-xl font-bold mt-4">{{ $car->brand }} {{ $car->model }}</h4>
                 <p class="text-gray-600">{{ $car->production_year }} | {{ $car->mileage }} km</p>
                 <p class="text-blue-600 font-bold">€{{ number_format($car->price, 2, ',', '.') }}</p>

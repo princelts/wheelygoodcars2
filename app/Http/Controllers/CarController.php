@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Car;
+use Illuminate\Support\Facades\Log;
 
 class CarController extends Controller
 {
@@ -47,68 +48,54 @@ class CarController extends Controller
     {
         return view('cars.create-step2', compact('licensePlate'));
     }
-
     public function storeStep2(Request $request, $licensePlate)
     {
         $request->validate([
             'mileage' => 'required|integer',
             'price' => 'required|numeric',
+            'images' => 'nullable|array|max:5',
             'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
         ]);
     
-        // Debug session data
-        dd(session()->all());
-    
-        $images = [];
+        // Store the images
+        $imagePaths = [];
         if ($request->hasFile('images')) {
-            dd($request->file('images')); // Check if images are being uploaded
             foreach ($request->file('images') as $image) {
-                $path = $image->store('cars', 'public'); 
-                $images[] = $path;
+                $path = $image->store('cars', 'public'); // Store the image in the "public/cars" directory
+                $imagePaths[] = $path; // Add the path to the array
             }
         }
     
-        try {
-            $car = Car::create([
-                'user_id' => Auth::id(),
-                'license_plate' => session('license_plate'),
-                'brand' => session('brand') ?? 'Onbekend',
-                'model' => session('model'),
-                'production_year' => session('production_year'),
-                'color' => session('color'),
-                'doors' => (int) session('doors'),
-                'seats' => (int) session('seats'),
-                'weight' => (int) session('weight'),
-                'mileage' => $request->mileage,
-                'price' => $request->price,
-                'images' => json_encode($images),
-            ]);
+        // Create the car
+        Car::create([
+            'user_id' => Auth::id(),
+            'license_plate' => session('license_plate'),
+            'brand' => session('brand'),
+            'model' => session('model'),
+            'production_year' => session('production_year'),
+            'color' => session('color'),
+            'doors' => (int) session('doors'),
+            'seats' => (int) session('seats'),
+            'weight' => (int) session('weight'),
+            'mileage' => $request->mileage,
+            'price' => $request->price,
+            'images' => json_encode($imagePaths), // Encode the array as JSON
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     
-            return redirect()->route('cars.my-cars')->with('success', 'Auto toegevoegd!');
-        } catch (\Exception $e) {
-            // Log error or display message
-            dd($e->getMessage());
-        }
+        return redirect()->route('cars.my-cars')->with('success', 'Auto toegevoegd!');
     }
-    
-    
     public function myCars()
     {
         $myCars = Auth::user()->cars()->with('tags')->get();
         return view('cars.my-cars', compact('myCars'));
     }
-    
-    public function home()
-    {
-        // Haal unieke waarden op voor de dropdowns
-    }
+
     public function searchResults(Request $request)
     {
-        // Begin met een query voor alle auto's
         $query = Car::query();
-    
 
-        // Filters toepassen op basis van de zoekopdracht
         if ($request->has('brand') && $request->brand != '') {
             $query->where('brand', $request->brand);
         }
@@ -134,7 +121,6 @@ class CarController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        // Pagineer de resultaten
         $cars = $query->paginate(12);
         $totalCars = $query->count();
 
@@ -144,8 +130,7 @@ class CarController extends Controller
     {
         $car = Car::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
         $car->delete();
-    
+
         return redirect()->route('cars.my-cars')->with('success', 'Auto verwijderd.');
     }
-    
 }

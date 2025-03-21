@@ -20,7 +20,7 @@ class CreateCarsTable extends Migration
             $table->integer('production_year');
             $table->decimal('weight', 8, 2);
             $table->string('color');
-            $table->json('images')->nullable();
+            $table->json('images')->nullable(); // Store image paths as a JSON array
             $table->timestamp('sold_at')->nullable();
             $table->integer('views')->default(0);
             $table->timestamps();
