@@ -10,6 +10,20 @@ use Carbon\Carbon;
 
 class CarSeeder extends Seeder
 {
+    // Array with 10 different car image paths
+    private $carImages = [
+        'cars/audi-a4.jpg',
+        'cars/bmw-3series.jpg',
+        'cars/mercedes-cclass.jpg',
+        'cars/volkswagen-golf.jpg',
+        'cars/ford-focus.jpg',
+        'cars/toyota-corolla.jpg',
+        'cars/honda-civic.jpg',
+        'cars/volvo-s60.jpg',
+        'cars/opel-astra.jpg',
+        'cars/skoda-octavia.jpg',
+    ];
+
     /**
      * Run the database seeds.
      */
@@ -32,6 +46,9 @@ class CarSeeder extends Seeder
                 ));
             }
 
+            // Get random image from the array
+            $randomImage = $this->carImages[array_rand($this->carImages)];
+
             DB::table('cars')->insert([
                 'user_id' => rand(1, 150),
                 'license_plate' => strtoupper(Str::random(6)),
@@ -44,7 +61,7 @@ class CarSeeder extends Seeder
                 'production_year' => $faker->numberBetween(1995, 2023),
                 'weight' => $faker->randomFloat(2, 800, 3000),
                 'color' => $faker->safeColorName,
-                'image' => null,
+                'images' => json_encode([$randomImage]), // Stored as JSON array
                 'sold_at' => $soldAt,
                 'views' => $faker->numberBetween(0, 1000),
                 'created_at' => $createdAt,
