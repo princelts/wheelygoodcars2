@@ -7,89 +7,71 @@
     <h2 class="text-2xl">op 40+ autosites tegelijk</h2>
 </div>
 
-<div class="mx-auto max-w-7xl bg-white text-black p-6 rounded-lg shadow-md">
-    <h3 class="text-xl font-bold text-blue-600 mb-4">NL aanbod</h3>
+<div class="mx-auto max-w-7xl  text-black p-6">
     
     <!-- Zoekformulier -->
-<!-- resources/views/home.blade.php -->
-<form action="{{ route('search.results') }}" method="GET" class="mb-6">
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <!-- Merk -->
-        <select name="brand" class="border p-2 rounded">
-            <option value="">Merk...</option>
-            @foreach($brands as $brand)
-                <option value="{{ $brand }}" {{ request('brand') == $brand ? 'selected' : '' }}>{{ $brand }}</option>
-            @endforeach
-        </select>
-
-        <!-- Model -->
-        <select name="model" class="border p-2 rounded">
-            <option value="">Model...</option>
-            @foreach($models as $model)
-                <option value="{{ $model }}" {{ request('model') == $model ? 'selected' : '' }}>{{ $model }}</option>
-            @endforeach
-        </select>
-
-        <!-- Kilometerstand -->
-        <div class="flex gap-2">
-            <span class="font-bold">Km.stand</span>
-            <input type="number" name="min_mileage" placeholder="Min" class="border p-2 rounded w-24" value="{{ request('min_mileage') }}">
-            <input type="number" name="max_mileage" placeholder="Max" class="border p-2 rounded w-24" value="{{ request('max_mileage') }}">
-        </div>
-
-        <!-- Bouwjaar -->
-        <div class="flex gap-2">
-            <span class="font-bold">Bouwjaar</span>
-            <input type="number" name="min_year" placeholder="Min" class="border p-2 rounded w-24" value="{{ request('min_year') }}">
-            <input type="number" name="max_year" placeholder="Max" class="border p-2 rounded w-24" value="{{ request('max_year') }}">
-        </div>
-
-        <!-- Prijs -->
-        <div class="flex gap-2">
-            <span class="font-bold">Prijs</span>
-            <input type="number" name="min_price" placeholder="Min" class="border p-2 rounded w-24" value="{{ request('min_price') }}">
-            <input type="number" name="max_price" placeholder="Max" class="border p-2 rounded w-24" value="{{ request('max_price') }}">
-        </div>
-
-    </div>
-
-    <div class="mt-4 flex justify-between items-center">
-        <!-- Wis knop -->
-        <a href="{{ route('home') }}" class="bg-blue-600 text-white px-4 py-2 rounded">Wis</a>
-        <!-- Zoek knop -->
-        <button type="submit" class="bg-orange-500 text-white px-6 py-3 rounded font-bold">Vinden</button>
-    </div>
-</form>
-
-    <!-- Resultaten -->
-    {{-- <div class="mt-6">
-        @if($cars->isEmpty())
-            <p class="text-center text-gray-500">Geen auto's gevonden.</p>
-        @else
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($cars as $car)
-                    <div class="bg-white p-4 rounded-lg shadow-md">
-                        <div class="text-center">
-                            @if($car->image)
-                                <img src="{{ asset('storage/' . $car->image) }}" alt="{{ $car->brand }} {{ $car->model }}" class="w-full h-48 object-cover rounded-lg">
-                            @else
-                                <div class="w-full h-48 bg-gray-200 flex items-center justify-center rounded-lg">
-                                    <span class="text-gray-500">Geen afbeelding</span>
-                                </div>
-                            @endif
-                        </div>
-                        <h4 class="text-xl font-bold mt-4">{{ $car->brand }} {{ $car->model }}</h4>
-                        <p class="text-gray-600">{{ $car->production_year }} | {{ $car->mileage }} km</p>
-                        <p class="text-blue-600 font-bold">€{{ number_format($car->price, 2, ',', '.') }}</p>
-                        <div class="mt-2">
-                            @foreach($car->tags as $tag)
-                                <span class="inline-block bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs mr-2">{{ $tag->name }}</span>
-                            @endforeach
-                        </div>
-                    </div>
-                @endforeach
+<!-- Zoekformulier -->
+<div class="bg-white rounded-xl shadow-md border border-gray-100 hover:border-blue-200 transition-all duration-300 p-6 mt-6">
+    <form action="{{ route('search.results') }}" method="GET">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <!-- Merk -->
+            <div class="flex flex-col">
+                <label class="text-sm font-semibold text-gray-600 mb-1">Merk</label>
+                <select name="brand" class="border border-gray-300 p-3 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Merk...</option>
+                    @foreach($brands as $brand)
+                        <option value="{{ $brand }}" {{ request('brand') == $brand ? 'selected' : '' }}>{{ $brand }}</option>
+                    @endforeach
+                </select>
             </div>
-        @endif
-    </div>
-</div> --}}
+
+            <!-- Model -->
+            <div class="flex flex-col">
+                <label class="text-sm font-semibold text-gray-600 mb-1">Model</label>
+                <select name="model" class="border border-gray-300 p-3 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Model...</option>
+                    @foreach($models as $model)
+                        <option value="{{ $model }}" {{ request('model') == $model ? 'selected' : '' }}>{{ $model }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Kilometerstand -->
+            <div class="flex flex-col">
+                <label class="text-sm font-semibold text-gray-600 mb-1">Km.stand</label>
+                <div class="flex gap-2">
+                    <input type="number" name="min_mileage" placeholder="Min" class="border border-gray-300 p-2 rounded-lg w-full" value="{{ request('min_mileage') }}">
+                    <input type="number" name="max_mileage" placeholder="Max" class="border border-gray-300 p-2 rounded-lg w-full" value="{{ request('max_mileage') }}">
+                </div>
+            </div>
+
+            <!-- Bouwjaar -->
+            <div class="flex flex-col">
+                <label class="text-sm font-semibold text-gray-600 mb-1">Bouwjaar</label>
+                <div class="flex gap-2">
+                    <input type="number" name="min_year" placeholder="Min" class="border border-gray-300 p-2 rounded-lg w-full" value="{{ request('min_year') }}">
+                    <input type="number" name="max_year" placeholder="Max" class="border border-gray-300 p-2 rounded-lg w-full" value="{{ request('max_year') }}">
+                </div>
+            </div>
+
+            <!-- Prijs -->
+            <div class="flex flex-col">
+                <label class="text-sm font-semibold text-gray-600 mb-1">Prijs</label>
+                <div class="flex gap-2">
+                    <input type="number" name="min_price" placeholder="Min" class="border border-gray-300 p-2 rounded-lg w-full" value="{{ request('min_price') }}">
+                    <input type="number" name="max_price" placeholder="Max" class="border border-gray-300 p-2 rounded-lg w-full" value="{{ request('max_price') }}">
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-between">
+            <a href="{{ route('home') }}" class="bg-white text-blue-600 border border-blue-600 px-6 py-3 rounded font-bold hover:bg-blue-600 hover:text-white transition">Wis</a>
+    <button type="submit"
+            class="            bg-blue-600 text-white px-5 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+        Vinden
+    </button>
+        </div>
+    </form>
+</div>
+
 @endsection
