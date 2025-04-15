@@ -30,3 +30,6 @@ Route::middleware('auth')->group(function () {
     // PDF Route
     Route::get('/generate-pdf/{id}', [PdfController::class, 'generatePdf'])->name('generate-pdf');
 });
+
+// Car Detail Route (Public)
+Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
