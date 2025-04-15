@@ -126,6 +126,20 @@ class CarController extends Controller
 
         return view('cars.search-results', compact('cars', 'totalCars'));
     }
+// app/Http/Controllers/CarController.php
+
+    public function show($id)
+    {
+        // Fetch the car by ID
+        $car = Car::findOrFail($id);
+
+        // Increment the view count
+        $car->increment('views');
+
+        // Pass the car data to the view
+        return view('cars.show', compact('car'));
+    }
+
     public function destroy($id)
     {
         $car = Car::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
