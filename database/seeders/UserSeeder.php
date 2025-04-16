@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             'name' => 'Admin User',
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
-            'phone_number' => '0612345678',
+            'phone_number' => '+1234567890', // Example phone number
             'is_admin' => true,
             'created_at' => now(),
             'updated_at' => now(),
