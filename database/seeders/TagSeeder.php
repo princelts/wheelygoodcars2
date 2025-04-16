@@ -7,22 +7,70 @@ use Illuminate\Support\Facades\DB;
 
 class TagSeeder extends Seeder
 {
+    // Definieer tag groepen waar tags niet samen voor kunnen komen voor één auto
+    private $tagGroups = [
+        'brandstof_type' => [
+            'Benzine', 'Diesel', 'Elektrisch', 'Hybride', 'Plug-in Hybride', 'LPG', 'Waterstof'
+        ],
+        'aandrijving' => [
+            'Voorwielaandrijving', 'Achterwielaandrijving', 'Vierwielaandrijving', '4x4'
+        ],
+        'transmissie' => [
+            'Handgeschakeld', 'Automaat', 'Halfautomaat', 'CVT'
+        ],
+        'carrosserie' => [
+            'SUV', 'Sedan', 'Hatchback', 'Cabrio', 'Coupé', 'MPV', 'Station', 'Pick-up', 'Bestelwagen'
+        ],
+        'voertuigklasse' => [
+            'Economy', 'Compact', 'Middenklasse', 'Topklasse', 'Luxe', 'Sport', 'Supercar'
+        ],
+        'uitrusting' => [
+            'Zonnepaneldak', 'Leren bekleding', 'Navigatie', 'Parkeersensoren',
+            'Achteruitrijcamera', 'Verwarmde stoelen', 'Keyless entry', 'Premium geluidssysteem',
+            'Lightmetal velgen', 'Getinte ramen', 'Trekhaken', 'Dakdrager'
+        ],
+        'conditie' => [
+            'Nieuw', 'Zo goed als nieuw', 'Gebruikt', 'Defect', 'Demonstratie'
+        ],
+        'gebruik' => [
+            'Gezin', 'Zakelijk', 'Prestatie', 'Off-road', 'Stad', 'Klassieker'
+        ]
+    ];
+
     /**
      * Run the database seeds.
      */
-    public function run(): void
+ public function run(): void
     {
-        $tags = [
-            'SUV', 'Sedan', 'Hatchback', 'Cabrio', 'Coupe', 'MPV',
-        ];
-
-        foreach ($tags as $tag) {
-            DB::table('tags')->insert([
-                'name' => $tag,
-                'color' => sprintf('#%06X', mt_rand(0, 0xFFFFFF)), // Random hex kleur
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        foreach ($this->tagGroups as $group => $tags) {
+            foreach ($tags as $tag) {
+                DB::table('tags')->insert([
+                    'name' => $tag,
+                    'group' => $group,
+                    'color' => $this->getColorForGroup($group),
+                    'used_count' => 0,
+                    'used_sold_count' => 0,
+                    'used_unsold_count' => 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         }
+    }
+
+    private function getColorForGroup($group)
+    {
+        $colors = [
+            'brandstof_type' => '#FF5733', // Oranjerood
+            'aandrijving' => '#3380FF', // Blauw
+            'transmissie' => '#33FF57', // Groen
+            'carrosserie' => '#F033FF', // Paars
+            'voertuigklasse' => '#FF33F0', // Roze
+            'uitrusting' => '#33FFF0', // Cyaan
+            'conditie' => '#FFC733', // Geeloranje
+            'gebruik' => '#8A33FF' // Violet
+        ];
+        
+        return $colors[$group] ?? sprintf('#%06X', mt_rand(0, 0xFFFFFF));
     }
 }
