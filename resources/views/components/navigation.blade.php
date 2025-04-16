@@ -52,6 +52,11 @@
                             </button>
                         </div>
                         <div id="user-menu" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 hidden">
+                            @if(Auth::user()->is_admin)
+                                <a href="/admin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600">
+                                    Admin Dashboard
+                                </a>
+                            @endif
                             <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600">
                                 {{ __('Logout') }}
                             </a>
@@ -109,6 +114,11 @@
                     <span class="ml-3 text-sm font-medium text-gray-700">{{ Auth::user()->name }}</span>
                 </div>
                 <div class="mt-1">
+                    @if(Auth::user()->is_admin)
+                        <a href="/admin" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50">
+                            Admin Dashboard
+                        </a>
+                    @endif
                     <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50">
                         {{ __('Logout') }}
                     </a>
