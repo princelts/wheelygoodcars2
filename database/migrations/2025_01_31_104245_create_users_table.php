@@ -13,7 +13,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('remember_token')->nullable();
-            $table->string('phone_number');
+            $table->string('phone_number')->nullable();
             $table->boolean('is_admin')->default(false);
             $table->timestamps();
         });
