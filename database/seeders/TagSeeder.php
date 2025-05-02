@@ -9,30 +9,30 @@ class TagSeeder extends Seeder
 {
     // Definieer tag groepen waar tags niet samen voor kunnen komen voor één auto
     private $tagGroups = [
-        'brandstof_type' => [
+        'Brandstof Type' => [
             'Benzine', 'Diesel', 'Elektrisch', 'Hybride', 'Plug-in Hybride', 'LPG', 'Waterstof'
         ],
-        'aandrijving' => [
+        'Aandrijving' => [
             'Voorwielaandrijving', 'Achterwielaandrijving', 'Vierwielaandrijving', '4x4'
         ],
-        'transmissie' => [
+        'Transmissie' => [
             'Handgeschakeld', 'Automaat', 'Halfautomaat', 'CVT'
         ],
-        'carrosserie' => [
+        'Carrosserie' => [
             'SUV', 'Sedan', 'Hatchback', 'Cabrio', 'Coupé', 'MPV', 'Station', 'Pick-up', 'Bestelwagen'
         ],
-        'voertuigklasse' => [
+        'Voertuigklasse' => [
             'Economy', 'Compact', 'Middenklasse', 'Topklasse', 'Luxe', 'Sport', 'Supercar'
         ],
-        'uitrusting' => [
+        'Uitrusting' => [
             'Zonnepaneldak', 'Leren bekleding', 'Navigatie', 'Parkeersensoren',
             'Achteruitrijcamera', 'Verwarmde stoelen', 'Keyless entry', 'Premium geluidssysteem',
             'Lightmetal velgen', 'Getinte ramen', 'Trekhaken', 'Dakdrager'
         ],
-        'conditie' => [
+        'Conditie' => [
             'Nieuw', 'Zo goed als nieuw', 'Gebruikt', 'Defect', 'Demonstratie'
         ],
-        'gebruik' => [
+        'Gebruik' => [
             'Gezin', 'Zakelijk', 'Prestatie', 'Off-road', 'Stad', 'Klassieker'
         ]
     ];

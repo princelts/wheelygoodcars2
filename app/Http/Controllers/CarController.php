@@ -92,40 +92,64 @@ class CarController extends Controller
         return view('cars.my-cars', compact('myCars'));
     }
 
-    public function searchResults(Request $request)
-    {
-        $query = Car::query();
+public function searchResults(Request $request)
+{
+    $query = Car::query();
 
-        if ($request->has('brand') && $request->brand != '') {
-            $query->where('brand', $request->brand);
-        }
-        if ($request->has('model') && $request->model != '') {
-            $query->where('model', $request->model);
-        }
-        if ($request->has('min_mileage') && $request->min_mileage != '') {
-            $query->where('mileage', '>=', $request->min_mileage);
-        }
-        if ($request->has('max_mileage') && $request->max_mileage != '') {
-            $query->where('mileage', '<=', $request->max_mileage);
-        }
-        if ($request->has('min_year') && $request->min_year != '') {
-            $query->where('production_year', '>=', $request->min_year);
-        }
-        if ($request->has('max_year') && $request->max_year != '') {
-            $query->where('production_year', '<=', $request->max_year);
-        }
-        if ($request->has('min_price') && $request->min_price != '') {
-            $query->where('price', '>=', $request->min_price);
-        }
-        if ($request->has('max_price') && $request->max_price != '') {
-            $query->where('price', '<=', $request->max_price);
-        }
-
-        $cars = $query->paginate(12);
-        $totalCars = $query->count();
-
-        return view('cars.search-results', compact('cars', 'totalCars'));
+    // Search query (for brand, model, or other features)
+    if ($request->filled('query')) {
+        $searchTerm = $request->input('query');
+        $query->where(function($q) use ($searchTerm) {
+            $q->where('brand', 'like', "%{$searchTerm}%")
+              ->orWhere('model', 'like', "%{$searchTerm}%")
+              ->orWhere('color', 'like', "%{$searchTerm}%");
+        });
     }
+
+    // Filters
+    if ($request->filled('brand')) {
+        $query->where('brand', $request->input('brand'));
+    }
+    if ($request->filled('min_price')) {
+        $query->where('price', '>=', $request->input('min_price'));
+    }
+    if ($request->filled('max_price')) {
+        $query->where('price', '<=', $request->input('max_price'));
+    }
+    if ($request->filled('min_year')) {
+        $query->where('production_year', '>=', $request->input('min_year'));
+    }
+    if ($request->filled('max_year')) {
+        $query->where('production_year', '<=', $request->input('max_year'));
+    }
+    if ($request->filled('min_mileage')) {
+        $query->where('mileage', '>=', $request->input('min_mileage'));
+    }
+    if ($request->filled('max_mileage')) {
+        $query->where('mileage', '<=', $request->input('max_mileage'));
+    }
+
+    if ($request->filled('tags')) {
+        $query->whereHas('tags', function($q) use ($request) {
+            $q->whereIn('tags.id', $request->input('tags'));
+        });
+    }
+
+    $brands = Car::select('brand')->distinct()->orderBy('brand')->pluck('brand');
+    
+    // Get tags grouped by their group field
+    $tags = \App\Models\Tag::where('used_count', '>', 0)
+                ->orderBy('group')
+                ->orderBy('name')
+                ->get();
+    
+    $tagGroups = $tags->groupBy('group');
+    
+    $cars = $query->paginate(12);
+    $totalCars = $cars->total();
+
+    return view('cars.search-results', compact('cars', 'totalCars', 'brands', 'tagGroups'));
+}
 // app/Http/Controllers/CarController.php
 
     public function show($id)
