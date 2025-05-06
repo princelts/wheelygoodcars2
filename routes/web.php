@@ -24,6 +24,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/create', [CarController::class, 'storeStep1']);
         Route::get('/create/{licensePlate}', [CarController::class, 'createStep2'])->name('cars.create.step2');
         Route::post('/create/{licensePlate}', [CarController::class, 'storeStep2']);
+            Route::get('/create/{licensePlate}/step3', [CarController::class, 'createStep3'])->name('cars.create.step3');
+    Route::post('/create/{licensePlate}/step3', [CarController::class, 'storeStep3']);
         Route::delete('/{id}', [CarController::class, 'destroy'])->name('cars.destroy');
     });
 
