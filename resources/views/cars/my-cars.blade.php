@@ -1,69 +1,97 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="mx-auto py-10 text-center">
-    <h1 class="text-4xl font-bold">Mijn aanbod</h1>
-    <h2 class="text-2xl">Bekijk en beheer je auto's</h2>
-</div>
+<div class="w-full lg:w-3/4 mx-auto">
+    <!-- Page Header -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold">Mijn aanbod</h1>
+        <p class="text-gray-600">Bekijk en beheer je auto's</p>
+    </div>
 
-<div class="mx-auto max-w-7xl bg-white p-6 rounded-lg shadow-md">
-    <h3 class="text-xl font-bold text-blue-600 mb-4">Mijn Autos</h3>
-    
-    <div class="table-responsive">
-        <table class="table-auto w-full border-collapse">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="text-center px-6 py-4">Afbeelding</th>
-                    <th class="px-6 py-4">Auto</th>
-                    <th class="text-primary px-6 py-4">Prijs</th>
-                    <th class="px-6 py-4">Merk & Model</th>
-                    <th class="px-6 py-4">Tags</th>
-                    <th class="px-6 py-4">Acties</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($myCars as $car)
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="text-center py-4">
-                            @if ($car->images)
-                            <div class="flex space-x-2 mt-2">
-                                @foreach (json_decode($car->images) as $image)
-                                    <img src="{{ asset('storage/' . $image) }}" class="w-20 h-20 object-cover rounded">
-                                @endforeach
+    <!-- Table Container -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Afbeelding</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Auto</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prijs</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tags</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acties</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($myCars as $car)
+                    <tr class="hover:bg-gray-50 transition-colors duration-150">
+                        <!-- Image Column -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex-shrink-0 h-16 w-16">
+                                @if ($car->images)
+                                    <img class="h-16 w-16 rounded-md object-cover" src="{{ asset('storage/' . json_decode($car->images)[0]) }}" alt="">
+                                @else
+                                    <img class="h-16 w-16 rounded-md object-cover" src="https://placehold.co/150?text=Geen+afbeelding" alt="">
+                                @endif
                             </div>
-                            @else
-                                <img src="https://via.placeholder.com/150" class="w-20 h-20 object-cover rounded">
-                            @endif
                         </td>
-                        <td class="py-4 px-6">
-                            <h5 class="font-bold text-lg">{{ $car->license_plate }}</h5>
-                            <span class="badge {{ $car->sold_at ? 'bg-red-600' : 'bg-green-600' }} text-white px-2 py-1 rounded-full text-xs">
-                                {{ $car->sold_at ? 'Verkocht' : 'Te koop' }}
-                            </span>
+                        
+                        <!-- Car Info Column -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $car->license_plate }}</div>
+                                    <div class="mt-1">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $car->sold_at ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
+                                            {{ $car->sold_at ? 'Verkocht' : 'Te koop' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
-                        <td class="text-primary font-semibold py-4 px-6">€{{ number_format($car->price, 2, ',', '.') }}</td>
-                        <td class="py-4 px-6">{{ $car->brand }} {{ $car->model }} ({{ $car->production_year }})</td>
-                        <td class="py-4 px-6">
-                            <div class="flex flex-wrap gap-2">
+                        
+                        <!-- Price Column -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-bold text-blue-600">€{{ number_format($car->price, 2, ',', '.') }}</div>
+                        </td>
+                        
+                        <!-- Details Column -->
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-900">{{ $car->brand }} {{ $car->model }}</div>
+                            <div class="text-sm text-gray-500">{{ $car->production_year }}</div>
+                        </td>
+                        
+                        <!-- Tags Column -->
+                        <td class="px-6 py-4">
+                            <div class="flex flex-wrap gap-1">
                                 @foreach($car->tags as $tag)
-                                    <span class="badge bg-gray-100 text-gray-700 border border-gray-300 px-2 py-1 rounded-full text-xs">{{ $tag->name }}</span>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        {{ $tag->name }}
+                                    </span>
                                 @endforeach
                             </div>
                         </td>
-                        <td class="py-4 px-6">
+                        
+                        <!-- Actions Column -->
+                        <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex space-x-2">
                                 <form action="{{ route('cars.destroy', $car->id) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze auto wilt verwijderen?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">🗑 Verwijderen</button>
+                                    <button type="submit" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none transition-colors">
+                                        Verwijderen
+                                    </button>
                                 </form>
-                                <a href="{{ route('generate-pdf', $car->id) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">📥 Download PDF</a>
+                                <a href="{{ route('generate-pdf', $car->id) }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none transition-colors">
+                                    PDF
+                                </a>
                             </div>
                         </td>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 @endsection
