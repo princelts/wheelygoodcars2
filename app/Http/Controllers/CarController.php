@@ -175,13 +175,13 @@ class CarController extends Controller
 
     public function myCars()
     {
-        $myCars = Auth::user()->cars()->with('tags')->get();
+        $myCars = Auth::user()->cars()->with('tags')->paginate(10);
         return view('cars.my-cars', compact('myCars'));
     }
 
     public function searchResults(Request $request)
     {
-        $query = Car::query();
+        $query = Car::query()->where('sold_at', null);
 
         // Search query
         if ($request->filled('query')) {

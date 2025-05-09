@@ -113,7 +113,6 @@
                                             <label for="tag-{{ $tag->id }}" class="ml-2 text-sm text-gray-700 flex items-center">
                                                 <span class="inline-block w-3 h-3 rounded-full mr-2" style="background-color: {{ $tag->color }}"></span>
                                                 {{ $tag->name }}
-                                                <span class="text-xs text-gray-500 ml-auto">({{ $tag->used_count }})</span>
                                             </label>
                                         </div>
                                     @endforeach
