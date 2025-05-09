@@ -3,23 +3,45 @@
 @section('content')
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
     <!-- Main Card -->
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 relative">
+        <!-- Sold Badge (conditionally shown) -->
+        @if($car->sold_at)
+        <div class="absolute top-4 right-4 z-10">
+            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-red-600 text-white shadow-lg">
+                VERKOCHT
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+            </span>
+        </div>
+        @endif
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6">
             <!-- Car Images -->
             <div class="space-y-4">
                 @if ($car->images)
                     <div class="grid grid-cols-1 gap-4">
                         @foreach (json_decode($car->images) as $image)
-                            <div class="relative group overflow-hidden rounded-lg shadow-md">
+                            <div class="relative group overflow-hidden rounded-lg shadow-md @if($car->sold_at) opacity-90 @endif">
                                 <img src="{{ asset('storage/' . $image) }}" 
                                      class="w-full h-full object-cover transform group-hover:scale-105 transition duration-300">
+                                @if($car->sold_at)
+                                <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                                    <span class="text-white text-3xl font-bold">VERKOCHT</span>
+                                </div>
+                                @endif
                             </div>
                         @endforeach
                     </div>
                 @else
-                    <div class="relative group overflow-hidden rounded-lg shadow-md">
+                    <div class="relative group overflow-hidden rounded-lg shadow-md @if($car->sold_at) opacity-90 @endif">
                         <img src="https://placehold.co/600x400/EEE/31343C" 
                              class="w-full h-full object-cover transform group-hover:scale-105 transition duration-300">
+                        @if($car->sold_at)
+                        <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                            <span class="text-white text-3xl font-bold">VERKOCHT</span>
+                        </div>
+                        @endif
                     </div>
                 @endif
             </div>
@@ -28,11 +50,19 @@
             <div class="space-y-6">
                 <!-- Title and Price -->
                 <div class="border-b border-gray-100 pb-4">
-                    <h1 class="text-3xl font-bold text-gray-900">{{ $car->brand }} {{ $car->model }}</h1>
+                    <h1 class="text-3xl font-bold text-gray-900 @if($car->sold_at) line-through @endif">{{ $car->brand }} {{ $car->model }}</h1>
                     <div class="flex items-center justify-between mt-2">
                         <p class="text-gray-600">{{ $car->production_year }} • {{ number_format($car->mileage, 0, ',', '.') }} km</p>
-                        <p class="text-blue-600 font-bold text-2xl">€{{ number_format($car->price, 2, ',', '.') }}</p>
+                        <p class="text-blue-600 font-bold text-2xl @if($car->sold_at) line-through @endif">€{{ number_format($car->price, 2, ',', '.') }}</p>
                     </div>
+                    @if($car->sold_at)
+                    <div class="mt-2 bg-red-50 p-2 rounded-lg inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-red-600 font-medium">Verkocht op {{ \Carbon\Carbon::parse($car->sold_at)->format('d-m-Y') }}</span>
+                    </div>
+                    @endif
                 </div>
 
                 <!-- Quick Stats -->
@@ -90,8 +120,8 @@
         <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
             <div class="flex flex-col sm:flex-row justify-between items-center">
                 <p class="text-gray-600 mb-2 sm:mb-0">Geïnteresseerd in deze auto?</p>
-                <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition duration-200">
-                    Contact opnemen
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition duration-200 @if($car->sold_at) opacity-50 cursor-not-allowed @endif" @if($car->sold_at) disabled @endif>
+                    @if($car->sold_at) Auto is verkocht @else Contact opnemen @endif
                 </button>
             </div>
         </div>
@@ -99,6 +129,7 @@
 </div>
 
 <!-- Popup Notification -->
+@unless($car->sold_at)
 <div id="viewsPopup" class="fixed bottom-6 right-6 bg-white p-4 rounded-xl shadow-xl border border-blue-200 hidden z-50 max-w-xs">
     <div class="flex items-start">
         <div class="bg-blue-100 p-2 rounded-full mr-3 flex-shrink-0">
@@ -121,9 +152,11 @@
         </div>
     </div>
 </div>
+@endunless
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        @unless($car->sold_at)
         setTimeout(function() {
             const popup = document.getElementById('viewsPopup');
             popup.classList.remove('hidden');
@@ -133,6 +166,7 @@
                 popup.classList.add('hidden');
             }, 10000);
         }, 10000);
+        @endunless
     });
 </script>
 @endsection
