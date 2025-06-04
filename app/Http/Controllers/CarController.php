@@ -239,6 +239,68 @@ class CarController extends Controller
         $car->increment('views');
         return view('cars.show', compact('car'));
     }
+public function edit(Car $car)
+{
+            $car = Car::where('id', $car->id)
+                 ->where('user_id', Auth::id())
+                 ->firstOrFail();
+    // Direct authorization check without Policy
+    if ($car->user_id !== auth()->id()) {
+        abort(403, 'Unauthorized action.');
+    }
+    
+    $allTags = Tag::all();
+    return view('cars.edit', [
+        'car' => $car,
+        'allTags' => $allTags
+    ]);
+}
+
+public function update(Request $request, Car $car)
+{
+    // Direct authorization check
+    if ($car->user_id !== auth()->id()) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    $validated = $request->validate([
+        'price' => 'required|numeric|min:0',
+        'mileage' => 'required|integer|min:0',
+        'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        'tags' => 'nullable|array',
+        'tags.*' => 'exists:tags,id',
+    ]);
+
+    // Handle images
+    $currentImages = $car->images ? json_decode($car->images) : [];
+    $removedImages = $request->removed_images ? explode(',', $request->removed_images) : [];
+
+    // Filter out removed images
+    $updatedImages = array_filter($currentImages, function($index) use ($removedImages) {
+        return !in_array($index, $removedImages);
+    }, ARRAY_FILTER_USE_KEY);
+
+    // Add new images
+    if ($request->hasFile('images')) {
+        foreach ($request->file('images') as $image) {
+            $path = $image->store('car_images', 'public');
+            $updatedImages[] = $path;
+        }
+    }
+
+    // Update only allowed fields
+    $car->update([
+        'price' => $validated['price'],
+        'mileage' => $validated['mileage'],
+        'images' => !empty($updatedImages) ? json_encode(array_values($updatedImages)) : null,
+    ]);
+
+    // Sync tags if provided
+    $car->tags()->sync($validated['tags'] ?? []);
+
+    return redirect()->route('cars.my-cars')->with('success', 'Auto succesvol bijgewerkt!');
+}
+
 
     public function destroy($id)
     {

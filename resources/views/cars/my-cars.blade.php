@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="w-full lg:w-3/4 mx-auto">
+<div class="w-full max-w-7xl mx-auto">
     <!-- Page Header -->
     <div class="mb-6">
         <h1 class="text-2xl font-bold">Mijn aanbod</h1>
@@ -24,9 +24,9 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($myCars as $car)
-                    <tr class="hover:bg-gray-50 transition-colors duration-150">
+                    <tr class="hover:bg-gray-50 transition-colors duration-150" onclick="window.location.href='{{ route('cars.edit', $car->id) }}'" style="cursor: pointer;">
                         <!-- Image Column -->
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-6 py-4 whitespace-nowrap" onclick="event.stopPropagation()">
                             <div class="flex-shrink-0 h-16 w-16">
                                 @if ($car->images)
                                     <img class="h-16 w-16 rounded-md object-cover" src="{{ asset('storage/' . json_decode($car->images)[0]) }}" alt="">
@@ -73,7 +73,7 @@
                         </td>
                         
                         <!-- Actions Column -->
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-6 py-4 whitespace-nowrap" onclick="event.stopPropagation()">
                             <div class="flex space-x-2">
                                 <form action="{{ route('cars.destroy', $car->id) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze auto wilt verwijderen?');">
                                     @csrf

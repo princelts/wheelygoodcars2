@@ -160,10 +160,10 @@
         </div>
         
         <!-- Cars Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
             @foreach($cars as $car)
                 @php
-                    $isFeatured = rand(1, 100) <= 10;
+                    $isFeatured = rand(1, 12) <= 2;
                     $colSpan = $isFeatured ? 'lg:col-span-2' : '';
                     $bgGradient = $isFeatured ? 'bg-gradient-to-br from-blue-50 to-white' : 'bg-white';
                 @endphp

@@ -17,16 +17,20 @@ Route::get('/search-results', [CarController::class, 'searchResults'])->name('se
 
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
-    // Car Routes
+
     Route::prefix('cars')->group(function () {
+
+        Route::get('/{car}/edit', [CarController::class, 'edit'])->name('cars.edit');
+        Route::put('/{car}', [CarController::class, 'update'])->name('cars.update');
         Route::get('/my-cars', [CarController::class, 'myCars'])->name('cars.my-cars');
         Route::get('/create', [CarController::class, 'createStep1'])->name('cars.create');
         Route::post('/create', [CarController::class, 'storeStep1']);
         Route::get('/create/{licensePlate}', [CarController::class, 'createStep2'])->name('cars.create.step2');
         Route::post('/create/{licensePlate}', [CarController::class, 'storeStep2']);
-            Route::get('/create/{licensePlate}/step3', [CarController::class, 'createStep3'])->name('cars.create.step3');
-    Route::post('/create/{licensePlate}/step3', [CarController::class, 'storeStep3']);
+        Route::get('/create/{licensePlate}/step3', [CarController::class, 'createStep3'])->name('cars.create.step3');
+        Route::post('/create/{licensePlate}/step3', [CarController::class, 'storeStep3']);
         Route::delete('/{id}', [CarController::class, 'destroy'])->name('cars.destroy');
+
     });
 
     // PDF Route
