@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Car;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class CarController extends Controller
 {
@@ -258,49 +259,72 @@ public function edit(Car $car)
 
 public function update(Request $request, Car $car)
 {
-    // Direct authorization check
-    if ($car->user_id !== auth()->id()) {
-        abort(403, 'Unauthorized action.');
-    }
-
+    // Validate the request data
     $validated = $request->validate([
         'price' => 'required|numeric|min:0',
         'mileage' => 'required|integer|min:0',
-        'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-        'tags' => 'nullable|array',
+        'tags' => 'array',
         'tags.*' => 'exists:tags,id',
+        'sold' => 'nullable|boolean',
+        'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        'removed_images' => 'nullable|string',
     ]);
 
-    // Handle images
-    $currentImages = $car->images ? json_decode($car->images) : [];
-    $removedImages = $request->removed_images ? explode(',', $request->removed_images) : [];
-
-    // Filter out removed images
-    $updatedImages = array_filter($currentImages, function($index) use ($removedImages) {
-        return !in_array($index, $removedImages);
-    }, ARRAY_FILTER_USE_KEY);
-
-    // Add new images
-    if ($request->hasFile('images')) {
-        foreach ($request->file('images') as $image) {
-            $path = $image->store('car_images', 'public');
-            $updatedImages[] = $path;
-        }
-    }
-
-    // Update only allowed fields
+    // Update basic fields
     $car->update([
         'price' => $validated['price'],
         'mileage' => $validated['mileage'],
-        'images' => !empty($updatedImages) ? json_encode(array_values($updatedImages)) : null,
     ]);
 
-    // Sync tags if provided
-    $car->tags()->sync($validated['tags'] ?? []);
+    // Handle sold status
+    if ($request->has('sold') && $request->sold && !$car->sold_at) {
+        // Mark as sold now
+        $car->update(['sold_at' => now()]);
+    } elseif (!$request->has('sold') && $car->sold_at) {
+        // Mark as not sold
+        $car->update(['sold_at' => null]);
+    }
+
+    // Handle tags
+    if ($request->has('tags')) {
+        $car->tags()->sync($validated['tags']);
+    } else {
+        $car->tags()->detach();
+    }
+
+    // Handle image removal
+    if ($request->removed_images) {
+        $removedIndices = explode(',', $request->removed_images);
+        $currentImages = json_decode($car->images, true) ?? [];
+        
+        foreach ($removedIndices as $index) {
+            if (isset($currentImages[$index])) {
+                // Delete the file from storage
+                Storage::delete($currentImages[$index]);
+                unset($currentImages[$index]);
+            }
+        }
+        
+        // Re-index array and update
+        $car->images = !empty($currentImages) ? json_encode(array_values($currentImages)) : null;
+        $car->save();
+    }
+
+    // Handle new image uploads
+    if ($request->hasFile('images')) {
+        $currentImages = json_decode($car->images, true) ?? [];
+        
+        foreach ($request->file('images') as $image) {
+            $path = $image->store('car_images', 'public');
+            $currentImages[] = $path;
+        }
+        
+        $car->images = json_encode($currentImages);
+        $car->save();
+    }
 
     return redirect()->route('cars.my-cars')->with('success', 'Auto succesvol bijgewerkt!');
 }
-
 
     public function destroy($id)
     {

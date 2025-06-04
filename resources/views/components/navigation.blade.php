@@ -13,7 +13,7 @@
 
             <!-- Navigation Links (Center) -->
             <div class="hidden md:flex md:items-center md:space-x-8">
-                <a href="{{ url('/cars') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200">
+                <a href="{{ url('/search-results') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200">
                     Alle auto's
                 </a>
                 <a href="{{ url('/cars/my-cars') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200">

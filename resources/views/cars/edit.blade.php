@@ -144,10 +144,21 @@
                         <h2 class="text-xl font-bold text-gray-900">Verkoopstatus</h2>
                         <div class="flex items-center">
                             <input type="checkbox" name="sold" id="sold" value="1" 
-                                   class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                                   {{ $car->sold_at ? 'checked' : '' }}>
+                                class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                                {{ $car->sold_at ? 'checked' : '' }}>
                             <label for="sold" class="ml-2 text-sm text-gray-700">Auto is verkocht</label>
                         </div>
+                        
+                        <!-- Only show if car is sold -->
+                        @if($car->sold_at)
+                        <div class="mt-2">
+                            <label class="block text-sm font-medium text-gray-700">Verkocht op</label>
+                            <div class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 sm:text-sm p-2">
+                                {{ $car->sold_at->format('d-m-Y H:i') }}
+                            </div>
+                        </div>
+                        @endif
+                    </div>
                     </div>
                 </div>
             </div>
@@ -166,18 +177,15 @@
 </div>
 
 <script>
+    // Image handling functions (existing)
     function removeImage(button, index) {
-        // Add to removed images hidden field
         const removedInput = document.getElementById('removed_images');
         const currentRemoved = removedInput.value ? removedInput.value.split(',') : [];
         currentRemoved.push(index);
         removedInput.value = currentRemoved.join(',');
-        
-        // Hide the image
         button.parentElement.style.display = 'none';
     }
-    
-    // Preview uploaded images
+
     document.getElementById('images').addEventListener('change', function(e) {
         const previewContainer = document.querySelector('.grid.grid-cols-3.gap-2');
         const files = e.target.files;
@@ -198,6 +206,15 @@
                 previewContainer.appendChild(div);
             };
             reader.readAsDataURL(files[i]);
+        }
+    });
+
+    // Sold status confirmation
+    document.getElementById('sold').addEventListener('change', function(e) {
+        if (this.checked) {
+            if (!confirm('Weet u zeker dat u deze auto als verkocht wilt markeren?')) {
+                this.checked = false;
+            }
         }
     });
 </script>
